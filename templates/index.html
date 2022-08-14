@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+
+{% block head %}
+<title>GameQuery</title>
+{% endblock %}
+
+
+{% block body %}
+<div class="content">
+    <section class="hero is-success">
+        <div class="hero-body has-text-centered">
+            <h1 class="title">GameQuery</h1>
+        </div>
+    </section>
+    
+    
+    <section class="container">
+        
+            <!--<h1 class="subtitle">There are no tasks, create one below</h1>-->
+        
+        <form class="control is-flex" action="/" method="POST">
+            <input class="input" type="text" name="content" id="content">
+            <input class="button" type="submit" value="Search">
+        </form>
+
+        {% if not ranks or ranks.rank|length < 1 %}
+            <h1 class="subtitle">No Results</h1>
+        {% else %}
+            <table class="table">
+                <tr>
+                    <th class="subtitle">Game</th>
+                    <th class="subtitle">Summary</th>
+                    <th class="subtitle">Link</th>
+                </tr>
+        
+                {% for i in range(ranks.rank|length) %}
+                    <tr>
+                        <td>{{ ranks.rank[i]['name'] }}</td>
+                        {% if 'summary' in ranks.rank[i] %}
+                            <td>{{ ranks.rank[i]['summary'] }}</td>
+                        {% else %}
+                            <td>(No Summary)</td>
+                        {% endif %}
+                        <td><a href="{{ ranks.rank[i]['url'] }}">{{ ranks.rank[i]['url'] }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </section>
+    
+</div>
+{% endblock %}
