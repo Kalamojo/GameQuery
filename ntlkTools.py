@@ -1,5 +1,5 @@
 import nltk
-nltk.download('stopwords')
+nltk.data.path.append('./nltk_data/')
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 import re
