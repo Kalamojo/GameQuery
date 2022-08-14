@@ -38,8 +38,8 @@ pywin32==304
 pyzmq==23.2.0
 regex==2022.7.25
 requests==2.28.1
-scikit-learn @ file:scikit_learn-1.0.2-cp310-cp310-win32.whl
-scipy @ file:scipy-1.7.3-cp310-cp310-win32.whl
+scikit_learn-1.0.2-cp310-cp310-win32.whl
+scipy-1.7.3-cp310-cp310-win32.whl
 six==1.16.0
 SQLAlchemy==1.4.40
 stack-data==0.3.0
