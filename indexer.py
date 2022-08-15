@@ -41,7 +41,8 @@ class GameIndex:
                 if self.ofs % 10000 == 0:
                     print(self.ofs)
                 r = requests.post("https://api.igdb.com/v4/games", headers={"Client-ID":"iandccesnxkg8eos8outaqkdjmcxkl", "Authorization":"Bearer uzjcv1er26qvwwyawqsqwjx4ghio13"}, 
-                                data=f"fields name, genres.name, themes.name, platforms.name, player_perspectives.name, game_modes.name, summary, url; limit {self.offstep}; offset {self.ofs};")
+                                data=f"fields name, genres.name, themes.name, summary, url; limit {self.offstep}; offset {self.ofs};")
+                #fields name, genres.name, themes.name, platforms.name, player_perspectives.name, game_modes.name, summary, url
                 #jsonText = json.loads(r.text)
                 #if len(jsonText) == 0:
                 #    break;
@@ -51,8 +52,9 @@ class GameIndex:
             for c in range(len(gameList)):
                 games[c] = gameList[c]
                 gameList[c] = " ".join(self.tokener.bagOWords(games[c]))
-                wordBank[c] = set(self.tokener.bagOWords(games[c]))
-                textBank[c] = self.tokener.bagOWords(games[c])
+                wordBank[c] = self.tokener.bagOWords(games[c])
+            
+            """
             with open(self.indexPath, 'wb') as f:
                 pickle.dump(games, f)
             with open(self.listPath, 'wb') as f:
@@ -61,4 +63,8 @@ class GameIndex:
                 pickle.dump(wordBank, f)
             with open(self.textPath, 'wb') as f:
                 pickle.dump(textBank, f)
+            """
+            json.dump(games, open("games.json", 'w'))
+            json.dump(gameList, open("gameList.json", 'w'))
+            json.dump(wordBank, open("wordBank.json", 'w'))
         return games, gameList, wordBank, textBank
