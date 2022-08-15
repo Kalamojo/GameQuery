@@ -11,8 +11,8 @@ db = SQLAlchemy(test3)
 games = pickle.load(open("data/index.pkl", 'rb'))
 gameList = pickle.load(open("data/indexList.pkl", 'rb'))
 wordBank = pickle.load(open("data/wordBank.pkl", 'rb'))
-textBank = pickle.load(open("data/textBank.pkl", 'rb'))
-ranks = GameRank(games, gameList, wordBank, textBank)
+#textBank = pickle.load(open("data/textBank.pkl", 'rb'))
+ranks = GameRank(games, gameList, wordBank)
 
 class Ranking(db.Model):
     id = db.Column(db.Integer, primary_key = True)

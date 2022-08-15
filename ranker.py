@@ -7,12 +7,12 @@ import shlex
 #from sklearn.metrics import jaccard_score
 
 class GameRank:
-    def __init__(self, games, gameList, wordBank, textBank):
+    def __init__(self, games, gameList, wordBank):
         self.tokener = tokeners()
         self.games = games
         self.gameList = gameList
         self.wordBank = wordBank
-        self.textBank = textBank
+        #self.textBank = textBank
         self.count = TfidfVectorizer() #use_idf=True,smooth_idf=True,sublinear_tf=False,analyzer='word',max_df=0.5, min_df=0.0005,max_features=None
         self.count_matrix = self.count.fit_transform(self.gameList)
         #self.cosine_sim_matrix = cosine_similarity(self.count_matrix, self.count_matrix)
@@ -143,7 +143,7 @@ class GameRank:
         return lists
 
     def and_dicts(self, queries):
-        def inv_make(query, index = self.games, words = self.wordBank, text = self.textBank):
+        def inv_make(query, index = self.games, words = self.wordBank):
             ind = {}
             #c = 0
             for i in range(len(index)):
@@ -154,9 +154,9 @@ class GameRank:
                         break;
                 if adds:
                     ind[i] = index[i]
-                    ind[i]['text'] = text[i]
+                    ind[i]['words'] = words[i]
             return ind
-        def ind_make(query, index = self.games, words = self.wordBank, text = self.textBank):
+        def ind_make(query, index = self.games, words = self.wordBank):
             ind = {}
             #c = 0
             for i in range(len(index)):
@@ -167,7 +167,7 @@ class GameRank:
                         break;
                 if adds:
                     ind[i] = index[i]
-                    ind[i]['text'] = text[i]
+                    ind[i]['words'] = words[i]
             return ind
 
         dicts = []
@@ -198,18 +198,18 @@ class GameRank:
                         break;
                 if adds:
                     ind[i] = self.games[i]
-                    ind[i]['text'] = self.textBank[i]
+                    ind[i]['words'] = self.wordBank[i]
         elif len(queries) == 2:
             for i in range(len(self.games)):
-                if check2(self.textBank[i], queries[0], queries[1]):
+                if check2(self.wordBank[i], queries[0], queries[1]):
                     ind[i] = self.games[i]
-                    ind[i]['text'] = self.textBank[i]
+                    ind[i]['words'] = self.wordBank[i]
                     #c += 1
         else:
             for i in range(len(self.games)):
-                if check_more(self.textBank[i], queries):
+                if check_more(self.wordBank[i], queries):
                     ind[i] = self.games[i]
-                    ind[i]['text'] = self.textBank[i]
+                    ind[i]['words'] = self.wordBank[i]
                     #c += 1
         return ind
 
@@ -254,7 +254,7 @@ class GameRank:
             return ranking
         else:
             for val in comb.values():
-                ind_list_new.append(" ".join(val['text']))
+                ind_list_new.append(" ".join(val['words']))
             count_matrix2 = count_new.fit_transform(ind_list_new)
             ranking = self.rankG(query, count_matrix2, comb, count_new)
         return ranking;
