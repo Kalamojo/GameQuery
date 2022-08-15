@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
-import pickle
+import json
 from ranker import GameRank
 
 test3 = Flask(__name__)
@@ -8,9 +8,12 @@ test3.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ranking.db'
 test3.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(test3)
 
-games = pickle.load(open("data/index.pkl", 'rb'))
-gameList = pickle.load(open("data/indexList.pkl", 'rb'))
-wordBank = pickle.load(open("data/wordBank.pkl", 'rb'))
+with open("data/index.json") as f:
+        games = json.load(f)
+with open("data/indexList.json") as f:
+        gameList = json.load(f)
+with open("data/wordBank.json") as f:
+        wordBank = json.load(f)
 #textBank = pickle.load(open("data/textBank.pkl", 'rb'))
 ranks = GameRank(games, gameList, wordBank)
 
