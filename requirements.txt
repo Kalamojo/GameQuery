@@ -9,10 +9,10 @@ Jinja2==3.1.2
 joblib==1.1.0
 MarkupSafe==2.1.1
 nltk==3.7
-numpy @ file:///C:/Users/nov18/Desktop/Code/GameQuery/GameQuery/numpy-1.22.4%2Bmkl-cp310-cp310-win32.whl
+numpy==1.22.4
 regex==2022.7.25
-scikit-learn @ file:///C:/Users/nov18/Desktop/Code/GameQuery/GameQuery/scikit_learn-1.0.2-cp310-cp310-win32.whl
-scipy @ file:///C:/Users/nov18/Desktop/Code/GameQuery/GameQuery/scipy-1.7.3-cp310-cp310-win32.whl
+scikit-learn==1.0.2
+scipy==1.7.3
 SQLAlchemy==1.4.40
 threadpoolctl==3.1.0
 tqdm==4.64.0
