@@ -15,12 +15,8 @@ wordBank = pickle.load(open("data/wordBank.pkl", 'rb'))
 ranks = GameRank(games, gameList, wordBank)
 
 class Ranking(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
     que = db.Column(db.String(200), nullable=False)
     rank = db.Column(db.PickleType, default=[])
-
-    def __repr__(self):
-        return '<Query %r>' % self.id
 
 @test3.route('/', methods=['POST', 'GET'])
 def index():
