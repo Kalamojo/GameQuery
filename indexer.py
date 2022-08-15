@@ -11,7 +11,7 @@ class GameIndex:
         self.listPath = "data/indexList.json"
         self.wordPath = "data/wordBank.json"
         self.ofs = 0
-        self.max_offset = 200500
+        self.max_offset = 4000 #200500
         self.offstep = 500
         self.games, self.gameList, self.wordBank = self.newIndex()
     
@@ -31,11 +31,11 @@ class GameIndex:
             with open(self.wordPath, 'rb') as f:
                     wordBank = pickle.load(f)
             """
-            with open(self.indexPath, 'r') as f:
+            with open(self.indexPath) as f:
                     games = json.load(f)
-            with open(self.listPath, 'r') as f:
+            with open(self.listPath) as f:
                     gameList = json.load(f)
-            with open(self.wordPath, 'r') as f:
+            with open(self.wordPath) as f:
                     wordBank = json.load(f)
             print('load index: ' + self.indexPath + ', load list: ' + self.listPath)
         else:
@@ -66,10 +66,10 @@ class GameIndex:
             with open(self.textPath, 'wb') as f:
                 pickle.dump(textBank, f)
             """
-            with open(self.indexPath, 'w') as f:
-                    json.dump(games, f)
-            with open(self.listPath, 'w') as f:
-                    json.dump(gameList, f)
-            with open(self.wordPath, 'w') as f:
-                    json.dump(wordBank, f)
+            with open(self.indexPath, 'w') as fp:
+                    json.dump(games, fp)
+            with open(self.listPath, 'w') as fp:
+                    json.dump(gameList, fp)
+            with open(self.wordPath, 'w') as fp:
+                    json.dump(wordBank, fp)
         return games, gameList, wordBank

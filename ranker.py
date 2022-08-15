@@ -36,9 +36,9 @@ class GameRank:
             for j in range(len(query)):
                 d[cosine_sim[i][j]].append((i, j))
         for value, positions in nlargest(top, d.items(), key=lambda item: item[0]):
-            if index[positions[0][0]]['id'] not in ids:
-                ranking[value] = index[positions[0][0]]
-                ids.append(index[positions[0][0]]['id'])
+            if index[str(positions[0][0])]['id'] not in ids:
+                ranking[value] = index[str(positions[0][0])]
+                ids.append(index[str(positions[0][0])]['id'])
         return ranking
 
     def rank1(self, query, top=20):
@@ -51,9 +51,9 @@ class GameRank:
             for j in range(len(query)):
                 d[cosine_sim[i][j]].append((i, j))
         for value, positions in nlargest(top, d.items(), key=lambda item: item[0]):
-            if self.games[positions[0][0]]['id'] not in ids:
-                ranking[value] = self.games[positions[0][0]]
-                ids.append(self.games[positions[0][0]]['id'])
+            if self.games[str(positions[0][0])]['id'] not in ids:
+                ranking[value] = self.games[str(positions[0][0])]
+                ids.append(self.games[str(positions[0][0])]['id'])
         return ranking
 
     def rank2(self, gid, top=10):
@@ -147,6 +147,7 @@ class GameRank:
             ind = {}
             #c = 0
             for i in range(len(index)):
+                i = str(i)
                 adds = True
                 for q in query:
                     if q in words[i]:
@@ -160,6 +161,7 @@ class GameRank:
             ind = {}
             #c = 0
             for i in range(len(index)):
+                i = str(i)
                 adds = True
                 for q in query:
                     if q not in words[i]:
@@ -191,6 +193,7 @@ class GameRank:
             return self.games
         elif len(queries) == 1:
             for i in range(len(self.games)):
+                i = str(i)
                 adds = True
                 for q in queries[0]:
                     if q not in self.wordBank[i]:
@@ -201,12 +204,14 @@ class GameRank:
                     ind[i]['words'] = self.wordBank[i]
         elif len(queries) == 2:
             for i in range(len(self.games)):
+                i = str(i)
                 if check2(self.wordBank[i], queries[0], queries[1]):
                     ind[i] = self.games[i]
                     ind[i]['words'] = self.wordBank[i]
                     #c += 1
         else:
             for i in range(len(self.games)):
+                i = str(i)
                 if check_more(self.wordBank[i], queries):
                     ind[i] = self.games[i]
                     ind[i]['words'] = self.wordBank[i]
@@ -243,7 +248,7 @@ class GameRank:
             newComb = {}
             c = 0
             for val in comb.values():
-                newComb[c] = val
+                newComb[str(c)] = val
                 c += 1
             return newComb
         count_new = TfidfVectorizer()
