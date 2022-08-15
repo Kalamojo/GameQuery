@@ -1,16 +1,15 @@
 from ntlkTools import tokeners
 import requests
 import json
-import pickle
+#import pickle
 from pathlib import Path
 
 class GameIndex:
     def __init__(self):
         self.tokener = tokeners()
-        self.indexPath = "data/index.pkl"
-        self.listPath = "data/indexList.pkl"
-        self.wordPath = "data/wordBank.pkl"
-        self.textPath = "data/textBank.pkl"
+        self.indexPath = "data/index.json"
+        self.listPath = "data/indexList.json"
+        self.wordPath = "data/wordBank.json"
         self.ofs = 0
         self.max_offset = 200500
         self.offstep = 500
@@ -20,20 +19,25 @@ class GameIndex:
         games = {}
         gameList = []
         wordBank = []
-        textBank = []
         indexFile = Path(self.indexPath)
         listFile = Path(self.listPath)
         wordFile = Path(self.wordPath)
         textFile = Path(self.textPath)
         if indexFile.is_file() and listFile.is_file() and wordFile.is_file() and textFile.is_file():
+            """
             with open(self.indexPath, 'rb') as f:
                     games = pickle.load(f)
             with open(self.listPath, 'rb') as f:
                     gameList = pickle.load(f)
             with open(self.wordPath, 'rb') as f:
                     wordBank = pickle.load(f)
-            with open(self.textPath, 'rb') as f:
-                    textBank = pickle.load(f)
+            """
+            with open(self.indexPath, 'r') as f:
+                    games = json.load(f)
+            with open(self.listPath, 'r') as f:
+                    gameList = json.load(f)
+            with open(self.wordPath, 'r') as f:
+                    wordBank = json.load(f)
             print('load index: ' + self.indexPath + ', load list: ' + self.listPath)
         else:
             print('new index', 'new list')
@@ -53,7 +57,6 @@ class GameIndex:
                 games[c] = gameList[c]
                 gameList[c] = " ".join(self.tokener.bagOWords(games[c]))
                 wordBank[c] = self.tokener.bagOWords(games[c])
-            
             """
             with open(self.indexPath, 'wb') as f:
                 pickle.dump(games, f)
@@ -64,7 +67,10 @@ class GameIndex:
             with open(self.textPath, 'wb') as f:
                 pickle.dump(textBank, f)
             """
-            json.dump(games, open("games.json", 'w'))
-            json.dump(gameList, open("gameList.json", 'w'))
-            json.dump(wordBank, open("wordBank.json", 'w'))
-        return games, gameList, wordBank, textBank
+            with open(self.indexPath, 'w') as f:
+                    json.dump(f)
+            with open(self.listPath, 'w') as f:
+                    json.dump(f)
+            with open(self.wordPath, 'w') as f:
+                    json.dump(f)
+        return games, gameList, wordBank
