@@ -13,17 +13,16 @@ class GameIndex:
         self.ofs = 0
         self.max_offset = 200500
         self.offstep = 500
-        self.games, self.gameList, self.wordBank, self.textBank = self.newIndex()
+        self.games, self.gameList, self.wordBank = self.newIndex()
     
     def newIndex(self):
         games = {}
         gameList = []
-        wordBank = []
+        wordBank = {}
         indexFile = Path(self.indexPath)
         listFile = Path(self.listPath)
         wordFile = Path(self.wordPath)
-        textFile = Path(self.textPath)
-        if indexFile.is_file() and listFile.is_file() and wordFile.is_file() and textFile.is_file():
+        if indexFile.is_file() and listFile.is_file() and wordFile.is_file():
             """
             with open(self.indexPath, 'rb') as f:
                     games = pickle.load(f)
@@ -68,9 +67,9 @@ class GameIndex:
                 pickle.dump(textBank, f)
             """
             with open(self.indexPath, 'w') as f:
-                    json.dump(f)
+                    json.dump(games, f)
             with open(self.listPath, 'w') as f:
-                    json.dump(f)
+                    json.dump(gameList, f)
             with open(self.wordPath, 'w') as f:
-                    json.dump(f)
+                    json.dump(wordBank, f)
         return games, gameList, wordBank
