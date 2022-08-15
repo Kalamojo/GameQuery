@@ -11,7 +11,7 @@ class GameIndex:
         self.listPath = "data/indexList.json"
         self.wordPath = "data/wordBank.json"
         self.ofs = 0
-        self.max_offset = 4000 #200500
+        self.max_offset = 200500 #200500
         self.offstep = 500
         self.games, self.gameList, self.wordBank = self.newIndex()
     
