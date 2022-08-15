@@ -3,15 +3,16 @@ colorama==0.4.5
 Flask==2.2.2
 Flask-SQLAlchemy==2.5.1
 greenlet==1.1.2
+gunicorn==20.1.0
 itsdangerous==2.1.2
 Jinja2==3.1.2
 joblib==1.1.0
 MarkupSafe==2.1.1
 nltk==3.7
-numpy==1.22.4
+numpy @ file:///C:/Users/nov18/Desktop/Code/GameQuery/GameQuery/numpy-1.22.4%2Bmkl-cp310-cp310-win32.whl
 regex==2022.7.25
-scikit_learn==1.0.2
-scipy==1.7.3
+scikit-learn @ file:///C:/Users/nov18/Desktop/Code/GameQuery/GameQuery/scikit_learn-1.0.2-cp310-cp310-win32.whl
+scipy @ file:///C:/Users/nov18/Desktop/Code/GameQuery/GameQuery/scipy-1.7.3-cp310-cp310-win32.whl
 SQLAlchemy==1.4.40
 threadpoolctl==3.1.0
 tqdm==4.64.0
