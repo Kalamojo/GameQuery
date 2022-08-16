@@ -1,1 +1,1 @@
-web: gunicorn --workers=3 --threads=3 test3:test3
+web: gunicorn --reload-engine --workers=2 --max-requests=1000 test3:test3
