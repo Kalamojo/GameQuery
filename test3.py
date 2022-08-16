@@ -107,14 +107,14 @@ def index():
         if query:
             print("Ayo")
             return render_template('index.html', ranks=query)
-        else:
-            new_Rank = Ranks(gameList=json.load(open("data/indexList.json")), 
-                            wordBank=json.load(open("data/wordBank.json")))
-            new_Index = Index(games=json.load(open("data/index.json")))
-            db.session.add(new_Index)
-            db.session.add(new_Rank)
-            db.session.commit()
-            return render_template('index.html', ranks=[])
+        
+            #new_Rank = Ranks(gameList=json.load(open("data/indexList.json")), 
+            #                wordBank=json.load(open("data/wordBank.json")))
+            #new_Index = Index(games=json.load(open("data/index.json")))
+            #db.session.add(new_Index)
+            #db.session.add(new_Rank)
+            #db.session.commit()
+        return render_template('index.html', ranks=[])
 
 if __name__ == "__main__":
     test3.run(debug=True)
