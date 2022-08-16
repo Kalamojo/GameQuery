@@ -1,14 +1,17 @@
 from indexer import GameIndex
 from ranker import GameRank
+import pickle
 
 print("starting")
-index = GameIndex()
+#index = GameIndex()
 
-games = index.games
-gameList = index.gameList
-wordBank = index.wordBank
+#games = index.games
+#gameList = index.gameList
+#wordBank = index.wordBank
 
-ranks = GameRank(games, gameList, wordBank)
+#ranks = GameRank(games, gameList, wordBank)
+with open("data/ranks.pkl", 'rb') as fp:
+    ranks = pickle.load(fp)
 #monkey and space
 print("New Search")
 while(True):

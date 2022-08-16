@@ -2,29 +2,41 @@ from flask import Flask, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 import json
 from ranker import GameRank
-
+print("Starting")
 test3 = Flask(__name__)
 test3.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ranking.db'
 test3.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(test3)
 
-with open("data/index.json") as f:
+def getRank():
+    with open("data/index.json") as f:
         games = json.load(f)
-with open("data/indexList.json") as f:
+    with open("data/indexList.json") as f:
         gameList = json.load(f)
-with open("data/wordBank.json") as f:
+    with open("data/wordBank.json") as f:
         wordBank = json.load(f)
 #textBank = pickle.load(open("data/textBank.pkl", 'rb'))
-ranks = GameRank(games, gameList, wordBank)
-
+    return GameRank(games, gameList, wordBank)
+ranks = []
 class Ranking(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     que = db.Column(db.String(200), nullable=False)
     rank = db.Column(db.PickleType, default=[])
+
+    def __repr__(self):
+        return '<Query %r>' % self.id
+
+@test3.before_first_request
+def do_something_only_once():
+    global ranks
+    ranks = getRank()
 
 @test3.route('/', methods=['POST', 'GET'])
 def index():
     query = Ranking.query.one_or_none()
     if request.method == 'POST':
+        print("pos")
+        global ranks
         if query:
             print("query")
             
