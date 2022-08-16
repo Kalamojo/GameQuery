@@ -3,8 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 from ranker import GameRank
 print("Starting")
+
 test3 = Flask(__name__)
 test3.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ranking.db'
+test3.config['SQLALCHEMY_BINDS'] = {
+    'db1': 'sqlite:///ranking.db',
+}
 test3.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(test3)
 
@@ -19,12 +23,15 @@ def getRank():
     return GameRank(games, gameList, wordBank)
 ranks = []
 class Ranking(db.Model):
+    __bind_key__ = 'db1'
     id = db.Column(db.Integer, primary_key=True)
     que = db.Column(db.String(200), nullable=False)
     rank = db.Column(db.PickleType, default=[])
 
     def __repr__(self):
         return '<Query %r>' % self.id
+
+#class Ranks()
 
 @test3.before_first_request
 def do_something_only_once():
