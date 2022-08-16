@@ -1,1 +1,1 @@
-web: gunicorn --workers=3 test3:test3
+web: gunicorn --workers=3 --threads=3 test3:test3
