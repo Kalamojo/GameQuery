@@ -56,7 +56,7 @@ def home():
             <section class="hero is-success">
                 <div class="hero-body has-text-centered">
                     <h1 class="title">RAPI</h1>
-                    <h1 class="subtitle">Ranking API from IGDB Database</h1>
+                    <h1 class="subtitle">Ranking API using IGDB Database</h1>
                 </div>
             </section>
             <section class="container has-text-centered">
