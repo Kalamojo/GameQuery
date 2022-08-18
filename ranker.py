@@ -7,11 +7,11 @@ import shlex
 #from sklearn.metrics import jaccard_score
 
 class GameRank:
-    def __init__(self, games, gameList, wordBank):
+    def __init__(self, games, gameList):
         self.tokener = tokeners()
         self.games = games
         self.gameList = gameList
-        self.wordBank = wordBank
+        #self.wordBank = wordBank
         #self.textBank = textBank
         self.count = TfidfVectorizer() #use_idf=True,smooth_idf=True,sublinear_tf=False,analyzer='word',max_df=0.5, min_df=0.0005,max_features=None
         self.count_matrix = self.count.fit_transform(self.gameList)
@@ -143,33 +143,35 @@ class GameRank:
         return lists
 
     def and_dicts(self, queries):
-        def inv_make(query, index = self.games, words = self.wordBank):
+        def inv_make(query, index = self.games, words = self.gameList):
             ind = {}
             #c = 0
             for i in range(len(index)):
+                wordI = words[i].split(" ")
                 i = str(i)
                 adds = True
                 for q in query:
-                    if q in words[i]:
+                    if q in wordI:
                         adds = False
                         break;
                 if adds:
                     ind[i] = index[i]
-                    ind[i]['words'] = words[i]
+                    ind[i]['words'] = wordI
             return ind
-        def ind_make(query, index = self.games, words = self.wordBank):
+        def ind_make(query, index = self.games, words = self.gameList):
             ind = {}
             #c = 0
             for i in range(len(index)):
+                wordI = words[i].split(" ")
                 i = str(i)
                 adds = True
                 for q in query:
-                    if q not in words[i]:
+                    if q not in wordI:
                         adds = False
                         break;
                 if adds:
                     ind[i] = index[i]
-                    ind[i]['words'] = words[i]
+                    ind[i]['words'] = wordI
             return ind
 
         dicts = []
@@ -193,28 +195,31 @@ class GameRank:
             return self.games
         elif len(queries) == 1:
             for i in range(len(self.games)):
+                wordI = self.gameList[i].split(" ")
                 i = str(i)
                 adds = True
                 for q in queries[0]:
-                    if q not in self.wordBank[i]:
+                    if q not in wordI:
                         adds = False
                         break;
                 if adds:
                     ind[i] = self.games[i]
-                    ind[i]['words'] = self.wordBank[i]
+                    ind[i]['words'] = wordI
         elif len(queries) == 2:
             for i in range(len(self.games)):
+                wordI = self.gameList[i].split(" ")
                 i = str(i)
-                if check2(self.wordBank[i], queries[0], queries[1]):
+                if check2(wordI, queries[0], queries[1]):
                     ind[i] = self.games[i]
-                    ind[i]['words'] = self.wordBank[i]
+                    ind[i]['words'] = wordI
                     #c += 1
         else:
             for i in range(len(self.games)):
+                wordI = self.gameList[i].split(" ")
                 i = str(i)
-                if check_more(self.wordBank[i], queries):
+                if check_more(wordI, queries):
                     ind[i] = self.games[i]
-                    ind[i]['words'] = self.wordBank[i]
+                    ind[i]['words'] = wordI
                     #c += 1
         return ind
 
