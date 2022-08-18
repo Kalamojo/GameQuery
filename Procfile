@@ -1,1 +1,1 @@
-web: gunicorn --reload-engine='auto' --workers=1 --threads=3 --max-requests=1000 wsgi:test3
+web: gunicorn --reload-engine='auto' --workers=1 --threads=3 --max-requests=1000 wsgi:rapi

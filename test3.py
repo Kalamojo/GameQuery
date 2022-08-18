@@ -67,13 +67,7 @@ def index():
             print("query")
             
             query.que = request.form['content']
-            if not query or query.que == '':
-                query.rank = []
-            elif ranks.query_bool(query.que):
-                query.rank = ranks.get_rank(ranks.querier(query.que))
-            else:
-                query.rank = ranks.get_rank(ranks.rank1(query.que))
-            
+            query.rank = ranks.queryToRank(query.que)
             try:
                 db.session.commit()
                 return redirect('/')
