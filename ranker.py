@@ -309,3 +309,10 @@ class GameRank:
                 ranking = self.rank1(" ".join(item))
             rankings.append(ranking)
         return self.or_op(rankings)
+
+    def queryToRank(self, query):
+        if not query or query == '':
+            return []
+        elif self.query_bool(query):
+            return self.get_rank(self.querier(query))
+        return self.get_rank(self.rank1(query))
