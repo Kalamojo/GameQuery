@@ -89,6 +89,8 @@ def home():
                 </table>
                 <br>
                 <div class="is-3">This is an experimental version, and certain query operations may crash the program.</div>
+                <br>
+                <div class="is-3"><a class="is-link" href="https://github.com/Kalamojo/GameQuery">GitHub Link</a></div>
             </section>
         </body>
         </html>
