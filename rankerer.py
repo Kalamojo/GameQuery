@@ -1,40 +1,29 @@
-from flask import Flask, request, render_template, redirect
-from flask_sqlalchemy import SQLAlchemy
 from ntlkTools import tokeners
 from collections import defaultdict
 from heapq import nlargest
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import shlex
-#from ranker import GameRank
-print("Starting")
+import ranker2
+#from sklearn.metrics import jaccard_score
 
-test3 = Flask(__name__)
-test3.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ranking.db'
-test3.config['SQLALCHEMY_BINDS'] = {
-    'db1': 'sqlite:///ranking.db',
-    'db2': 'sqlite:///ranks.db',
-    'db3': 'sqlite:///index.db'
-}
-test3.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(test3)
 
 class GameRank:
-    def __init__(self, games, gameList, wordBank):
+    def __init__(self):
         self.tokener = tokeners()
-        self.games = games
-        self.gameList = gameList
-        self.wordBank = wordBank
-        #self.textBank = textBank
+        self.gameList = []
+        for rep in ranker2.Repos.query.all():
+            self.gameList.append(rep.gameList)
         self.count = TfidfVectorizer() #use_idf=True,smooth_idf=True,sublinear_tf=False,analyzer='word',max_df=0.5, min_df=0.0005,max_features=None
         self.count_matrix = self.count.fit_transform(self.gameList)
         #self.cosine_sim_matrix = cosine_similarity(self.count_matrix, self.count_matrix)
 
     def idToInd(self, gid):
         gid = int(gid)
-        for ind in range(len(self.games)):
+        for ind in range(len(self.gameList)):
             #print(self.games[ind]['id'])
-            if self.games[ind]['id'] == gid:
+            game = ranker2.Gamers.query.get_or_404(ind+1)
+            if game.ind == gid:
                 return ind
         print("Game not found")
         return 0
@@ -49,9 +38,9 @@ class GameRank:
             for j in range(len(query)):
                 d[cosine_sim[i][j]].append((i, j))
         for value, positions in nlargest(top, d.items(), key=lambda item: item[0]):
-            if index[str(positions[0][0])]['id'] not in ids:
+            if index[str(positions[0][0])].ind not in ids:
                 ranking[value] = index[str(positions[0][0])]
-                ids.append(index[str(positions[0][0])]['id'])
+                ids.append(index[str(positions[0][0])].ind)
         return ranking
 
     def rank1(self, query, top=20):
@@ -64,9 +53,10 @@ class GameRank:
             for j in range(len(query)):
                 d[cosine_sim[i][j]].append((i, j))
         for value, positions in nlargest(top, d.items(), key=lambda item: item[0]):
-            if self.games[str(positions[0][0])]['id'] not in ids:
-                ranking[value] = self.games[str(positions[0][0])]
-                ids.append(self.games[str(positions[0][0])]['id'])
+            game = ranker2.Gamers.query.get_or_404(positions[0][0]+1)
+            if game.ind not in ids:
+                ranking[value] = game
+                ids.append(game.ind) #getattr(game, "ind")
         return ranking
 
     def rank2(self, gid, top=10):
@@ -80,26 +70,29 @@ class GameRank:
             for j in range(len(query)):
                 d[cosine_sim[i][j]].append((i, j))
         for value, positions in nlargest(top, d.items(), key=lambda item: item[0]):
-            if self.games[positions[0][0]]['id'] not in ids:
-                ranking[value] = self.games[positions[0][0]]
-                ids.append(self.games[positions[0][0]]['id'])
+            game = ranker2.Gamers.query.get_or_404(positions[0][0]+1)
+            if game.ind not in ids:
+                ranking[value] = game
+                ids.append(game.ind)
         return ranking
 
     def rank2b(self, gid, top=10):
         ids = []
         ranking = {}
         first = True
-        idx = [ind for ind in range(len(self.games)) if self.games[ind]["id"] == gid][0]
+        idx = [ind for ind in range(len(self.gameList)) if ranker2.Gamers.query.get_or_404(ind+1).ind == gid][0]
         d = defaultdict(list)
         for j in range(len(self.cosine_sim_matrix[idx])):
             d[self.cosine_similarity_matrix[idx][j]].append((idx, j))
+        c = 1
         for value, positions in nlargest(top+1, d.items(), key=lambda item: item[0]):
             if first:
                 first = False
                 continue;
-            if self.games[positions[0][0]]['id'] not in ids:
-                ranking[value] = self.games[positions[0][0]]
-                ids.append(self.games[positions[0][0]]['id'])
+            game = ranker2.Gamers.query.get_or_404(positions[0][0]+1)
+            if game.ind not in ids:
+                ranking[value] = game
+                ids.append(game.ind)
         return ranking
 
     def print_rank(self, ranking, top=5):
@@ -109,10 +102,10 @@ class GameRank:
             times = 0
             for value, positions in nlargest(top, ranking.items(), key=lambda item: item[0]):
                 if value != 0:
-                    print(value, positions['name'])
-                    print("id:", positions['id'])
+                    print(value, positions.name)
+                    print("id:", positions.ind)
                     if "summary" in positions:
-                        print(positions['summary'])
+                        print(positions.summary)
                     print('')
                     times += 1
                 else:
@@ -156,33 +149,51 @@ class GameRank:
         return lists
 
     def and_dicts(self, queries):
-        def inv_make(query, index = self.games, words = self.wordBank):
-            ind = {}
+        def inv_make(query):
+            ind = defaultdict(dict)
             #c = 0
-            for i in range(len(index)):
+            for i in range(len(self.gameList)):
+                rep = ranker2.Repos.query.get_or_404(i+1)
+                game = ranker2.Gamers.query.get_or_404(i+1)
                 i = str(i)
                 adds = True
                 for q in query:
-                    if q in words[i]:
+                    if q in rep.wordBank:
                         adds = False
                         break;
                 if adds:
-                    ind[i] = index[i]
-                    ind[i]['words'] = words[i]
+                    ind[i]['ind'] = game.ind
+                    #setattr(ind[i], 'ind', game.ind)
+                    ind[i]['name'] = game.name
+                    #setattr(ind[i], 'name', game.name)
+                    ind[i]['url'] = game.url
+                    #setattr(ind[i], 'url', game.url)
+                    if game.summary:
+                        ind[i]['summary'] = game.summary
+                    ind[i]['words'] = rep.wordBank
             return ind
-        def ind_make(query, index = self.games, words = self.wordBank):
-            ind = {}
+        def ind_make(query):
+            ind = defaultdict(dict)
             #c = 0
-            for i in range(len(index)):
+            for i in range(len(self.gameList)):
+                rep = ranker2.Repos.query.get_or_404(i+1)
+                game = ranker2.Gamers.query.get_or_404(i+1)
                 i = str(i)
                 adds = True
                 for q in query:
-                    if q not in words[i]:
+                    if q not in rep.wordBank:
                         adds = False
                         break;
                 if adds:
-                    ind[i] = index[i]
-                    ind[i]['words'] = words[i]
+                    ind[i]['ind'] = game.ind
+                    #setattr(ind[i], 'ind', game.ind)
+                    ind[i]['name'] = game.name
+                    #setattr(ind[i], 'name', game.name)
+                    ind[i]['url'] = game.url
+                    #setattr(ind[i], 'url', game.url)
+                    if game.summary:
+                        ind[i]['summary'] = game.summary
+                    ind[i]['words'] = rep.wordBank
             return ind
 
         dicts = []
@@ -203,31 +214,37 @@ class GameRank:
         ind = {}
         #c = 0
         if len(queries) == 0:
-            return self.games
+            return ranker2.Gamers.query.all()
         elif len(queries) == 1:
-            for i in range(len(self.games)):
+            for i in range(len(self.gameList)):
+                rep = ranker2.Repos.query.get_or_404(i+1)
+                game = ranker2.Gamers.query.get_or_404(i+1)
                 i = str(i)
                 adds = True
                 for q in queries[0]:
-                    if q not in self.wordBank[i]:
+                    if q not in rep.wordBank:
                         adds = False
                         break;
                 if adds:
-                    ind[i] = self.games[i]
-                    ind[i]['words'] = self.wordBank[i]
+                    ind[i] = game
+                    ind[i]['words'] = getattr(rep, "wordBank")
         elif len(queries) == 2:
-            for i in range(len(self.games)):
+            for i in range(len(self.gameList)):
+                rep = ranker2.Repos.query.get_or_404(i+1)
+                game = ranker2.Gamers.query.get_or_404(i+1)
                 i = str(i)
-                if check2(self.wordBank[i], queries[0], queries[1]):
-                    ind[i] = self.games[i]
-                    ind[i]['words'] = self.wordBank[i]
+                if check2(rep.wordBank, queries[0], queries[1]):
+                    ind[i] = game
+                    ind[i]['words'] = getattr(rep, "wordBank")
                     #c += 1
         else:
-            for i in range(len(self.games)):
+            for i in range(len(self.gameList)):
+                rep = ranker2.Repos.query.get_or_404(i+1)
+                game = ranker2.Gamers.query.get_or_404(i+1)
                 i = str(i)
-                if check_more(self.wordBank[i], queries):
-                    ind[i] = self.games[i]
-                    ind[i]['words'] = self.wordBank[i]
+                if check_more(rep.wordBank, queries):
+                    ind[i] = game
+                    ind[i]['words'] = getattr(rep, "wordBank")
                     #c += 1
         return ind
 
@@ -322,108 +339,3 @@ class GameRank:
                 ranking = self.rank1(" ".join(item))
             rankings.append(ranking)
         return self.or_op(rankings)
-
-def getRank(a, b, c):
-    return GameRank(a, b, c)
-ranks = []
-class Ranking(db.Model):
-    __bind_key__ = 'db1'
-    id = db.Column(db.Integer, primary_key=True)
-    que = db.Column(db.String(200), nullable=False)
-    rank = db.Column(db.PickleType, default=[])
-    def __repr__(self):
-        return '<Query %r>' % self.id
-
-class Ranks(db.Model):
-    __bind_key__ = 'db2'
-    id = db.Column(db.Integer, primary_key=True)
-    gameList = db.Column(db.PickleType, nullable=False)
-    wordBank = db.Column(db.PickleType, nullable=False)
-    def __repr__(self):
-        return '<Rank %r>' % self.id
-
-class Index(db.Model):
-    __bind_key__ = 'db3'
-    id = db.Column(db.Integer, primary_key=True)
-    games = db.Column(db.PickleType, nullable=False)
-    def __repr__(self):
-        return '<Index %r>' % self.id
-"""
-@test3.before_first_request
-def do_something_only_once():
-    global ranks
-    ranks = getRank()
-"""
-
-@test3.route('/', methods=['POST', 'GET'])
-def index():
-    """
-    new_Rank = Ranks(gameList=json.load(open("data/indexList.json")), 
-                    wordBank=json.load(open("data/wordBank.json")))
-    new_Index = Index(games=json.load(open("data/index.json")))
-    db.session.add(new_Index)
-    db.session.add(new_Rank)
-    db.session.commit()
-    """
-    query = Ranking.query.one_or_none()
-    if request.method == 'POST':
-        print("pos")
-        global ranks
-        if ranks == []:
-            rank = Ranks.query.one_or_none()
-            index = Index.query.one_or_none()
-            ranks = getRank(index.games, rank.gameList, rank.wordBank)
-        if query:
-            print("query")
-            
-            query.que = request.form['content']
-            if not query or query.que == '':
-                query.rank = []
-            elif ranks.query_bool(query.que):
-                query.rank = ranks.get_rank(ranks.querier(query.que))
-            else:
-                query.rank = ranks.get_rank(ranks.rank1(query.que))
-            
-            try:
-                db.session.commit()
-                return redirect('/')
-            except:
-                return "There was an issue fetching the games"
-        else:
-            print("no query")
-            #new_Rank = Ranks(gameList=json.load(open("data/indexList.json")), 
-            #                wordBank=json.load(open("data/wordBank.json")))
-            #new_Index = Index(games=json.load(open("data/index.json")))
-            #ranks = getRank(new_Index.games, new_Rank.gameList, new_Rank.wordBank)
-            query = request.form['content']
-            newRank = []
-            if not query or query == '':
-                pass;
-            elif ranks.query_bool(query):
-                newRank = ranks.get_rank(ranks.querier(query))
-            else:
-                newRank = ranks.get_rank(ranks.rank1(query))
-            new_query = Ranking(que=query, rank=newRank)
-            try:
-                #db.session.add(new_Index)
-                #db.session.add(new_Rank)
-                db.session.add(new_query)
-                db.session.commit()
-                return redirect('/')
-            except:
-                return "There was an issue fetching the games"
-    else:
-        if query:
-            print("Ayo")
-            return render_template('index.html', ranks=query)
-        
-            #new_Rank = Ranks(gameList=json.load(open("data/indexList.json")), 
-            #                wordBank=json.load(open("data/wordBank.json")))
-            #new_Index = Index(games=json.load(open("data/index.json")))
-            #db.session.add(new_Index)
-            #db.session.add(new_Rank)
-            #db.session.commit()
-        return render_template('index.html', ranks=[])
-
-if __name__ == "__main__":
-    test3.run(debug=True)
