@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from ranker import GameRank
-import json
 
 rapi = Flask(__name__)
 rapi.config['SQLALCHEMY_BINDS'] = {
@@ -35,6 +34,7 @@ def do_something_only_once():
     index = Index.query.one_or_none()
     ranks = GameRank(index.games, rank.gameList)
 
+
 @rapi.route('/', methods=['GET'])
 def home():
     """
@@ -56,8 +56,39 @@ def home():
             <section class="hero is-success">
                 <div class="hero-body has-text-centered">
                     <h1 class="title">RAPI</h1>
-                    <h1 class="subtitle">Ranking API for GameQuery</h1>
+                    <h1 class="subtitle">Ranking API from IGDB Database</h1>
                 </div>
+            </section>
+            <section class="container has-text-centered">
+                <table class="table is-fullwidth">
+                    <tr>
+                        <th class="subtitle">Type of Query</th>
+                        <th class="subtitle">Example</th>
+                        <th class="subtitle">Parameter Implementation</th>
+                    </tr>
+                    <tr>
+                        <th>Basic Search</th>
+                        <th>aliens</th>
+                        <th><a class="is-link" href="https://gamequery.herokuapp.com/api/rank?query=aliens">/api/rank?query=aliens</a></th>
+                    </tr>
+                    <tr>
+                        <th>Or</th>
+                        <th>pokemon or dragon ball</th>
+                        <th><a class="is-link" href="https://gamequery.herokuapp.com/api/rank?query=pokemon+or+dragon+ball">/api/rank?query=pokemon+or+dragon+ball</a></th>
+                    </tr>
+                    <tr>
+                        <th>And</th>
+                        <th>horse and race</th>
+                        <th><a class="is-link" href="https://gamequery.herokuapp.com/api/rank?query=horse+and+race">/api/rank?query=horse+and+race</a></th>
+                    </tr>
+                    <tr>
+                        <th>String Literal</th>
+                        <th>super smash bros</th>
+                        <th><a class="is-link" href='https://gamequery.herokuapp.com/api/rank?query="super+smash+bros"'>/api/rank?query="super+smash+bros"</a></th>
+                    </tr>
+                </table>
+                <br>
+                <div class="is-3">This is an experimental version, and certain query operations may crash the program.</div>
             </section>
         </body>
         </html>
