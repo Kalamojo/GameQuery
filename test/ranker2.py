@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
-import rankerer
+import rankerer as rankerer
 
 ranker2 = Flask(__name__)
 ranker2.config['SQLALCHEMY_BINDS'] = {

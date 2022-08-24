@@ -4,7 +4,7 @@ from heapq import nlargest
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import shlex
-import ranker2
+import ranker2 as ranker2
 #from sklearn.metrics import jaccard_score
 
 

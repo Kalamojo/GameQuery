@@ -1,13 +1,2 @@
 gameRec/
-indexer.py
-indexer2.py
-indexer3.py
-ranker2.py
-rankerer.py
-rankerFast.py
-ranking.db
-test3.py
-test4.py
-test5.py
-test6.py
-test7.py
+test/
