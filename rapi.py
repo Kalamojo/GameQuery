@@ -83,7 +83,7 @@ def home():
                     </tr>
                     <tr>
                         <th>String Literal</th>
-                        <th>super smash bros</th>
+                        <th>"super smash bros"</th>
                         <th><a class="is-link" href='https://gamequery.herokuapp.com/api/rank?query="super+smash+bros"'>/api/rank?query="super+smash+bros"</a></th>
                     </tr>
                 </table>
